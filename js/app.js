@@ -1,11 +1,11 @@
 'use strict';
 
 //Global Variables
+var totalVotes = 0;
 var allProducts = [];
 var imageOneElement = document.getElementById('image-one');
 var imageTwoElement = document.getElementById('image-two');
 var imageThreeElement = document.getElementById('image-three');
-var imageContainer = document.getElementById('image-container');
 var lastRandomNumber = [];
 
 
@@ -22,7 +22,6 @@ var lastRandomNumber = [];
 function Products(filepath, productName) {
   this.filepath = filepath;
   this.productName = productName;
-
   this.votes = 0;
   this.views = 0;
 
@@ -53,7 +52,8 @@ new Products('img/wine-glass.jpg', 'wine-glass');
 
 
 function render(imageElement) {
-var randomIndex = getRandomNumber(0, allProducts.length - 1);
+  var randomIndex = getRandomNumber(0, allProducts.length - 1);
+  
   while (lastRandomNumber.includes(randomIndex)) {
     randomIndex = getRandomNumber(0, allProducts.length - 1);
   }
@@ -65,9 +65,12 @@ var randomIndex = getRandomNumber(0, allProducts.length - 1);
 
   //count the number of times a product was viewed
   allProducts[randomIndex].views++;
-  //console.log('increasing views for ', allProducts[randomIndex].productName);
-  lastRandomNumber = [];
-  lastRandomNumber.push(randomIndex);
+
+
+
+  if (lastRandomNumber.length > 25){
+    lastRandomNumber.shift();
+  }
 }
 
 
@@ -76,12 +79,8 @@ function getRandomNumber(min, max) {
 }
 
 
-imageContainer.addEventListener('click', function (event) {
-  render(imageOneElement);
-  render(imageTwoElement);
-  render(imageThreeElement);
-  
 
+function handleClick(event){
   var chosenProduct = event.target.title;
 
   for (var i = 0; i < allProducts.length; i++) {
@@ -90,31 +89,28 @@ imageContainer.addEventListener('click', function (event) {
       allProducts[i].votes++;
     }
   }
-  var voteCount = event.currentTarget;
-  voteCount.clicks = (voteCount.clicks || 0)+1;
-  console.log('user has tried ', voteCount.clicks);
-});
+
+  render(imageOneElement);
+  render(imageTwoElement);
+  render(imageThreeElement);
+  
+  totalVotes++;
+  if(totalVotes >= 5){
+    document.getElementById('image-container').removeEventListener('click', handleClick);
+
+    var ulElement= document.getElementById('results');
+
+    for (var j=0; j<allProducts.length; j++) {
+      var liElement = document.createElement('li');
+      liElement.textContent = `${allProducts[j].productName} had ${allProducts[j].votes} votes and was seen ${allProducts[j].views} times.`;
+      ulElement.appendChild(liElement);
+    }
+  }
+} 
 
 
-
+document.getElementById('image-container').addEventListener('click', handleClick);
 
 render(imageOneElement);
 render(imageTwoElement);
 render(imageThreeElement);
-
-
-
-//console.log(allProducts);
-
-
-
-
-//******need help here make sure random images aren't duplicted
-
-//- create counter for number of times an image was shown
-//- create a counter for the number of times a user voted (end after 25)
-//- ability to show the results at the end of the vote tally
-
-
-//- After 25 times remove event listener and display results
-//    ie. '3 votes for banana slicer'
