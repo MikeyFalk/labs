@@ -63,9 +63,10 @@ function render(imageElement) {
   imageElement.src = allProducts[randomIndex].filepath;
   imageElement.alt = allProducts[randomIndex].productName;
   imageElement.title = allProducts[randomIndex].productName;
-
   //count the number of times a product was viewed
   allProducts[randomIndex].views++;
+  
+  lastRandomNumber.push(randomIndex);
 
 
 
@@ -77,6 +78,7 @@ function render(imageElement) {
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
+
 }
 
 
@@ -96,7 +98,7 @@ function handleClick(event) {
   render(imageThreeElement);
 
   totalVotes++;
-  if (totalVotes >= 5) {
+  if (totalVotes >= 25) {
 
 
     document.getElementById('image-container').removeEventListener('click', handleClick);
