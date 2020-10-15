@@ -1,7 +1,22 @@
 'use strict';
 
+function checkLocal(){
+  var getResultsFromStorage = localStorage.getItem('pastResults');
+  
+  
+  if(getResultsFromStorage){
+    var parsedResults = JSON.parse(getResultsFromStorage);
+    console.log('parsed results look like' , parsedResults);
+    
+    for (var i = 0; i <parsedResults.length; i++); {
+      new ReviewedProducts((parsedResults[i].filePath),(parsedResults[i].productName),(parsedResults[i].votes),(parsedResults[i].views));
+    }
+  }
+}
+checkLocal();
+
 //Global Variables
-var totalVotes = 0;
+
 var allProducts = [];
 var imageOneElement = document.getElementById('image-one');
 var imageTwoElement = document.getElementById('image-two');
@@ -9,7 +24,9 @@ var imageThreeElement = document.getElementById('image-three');
 var lastRandomNumber = [];
 var views = [];
 var votes = [];
-var names= [];
+var names = [];
+var totalVotes = 0;
+
 
 //Goal: render three product images to the DOM
 //DOM images on site - done
@@ -18,11 +35,11 @@ var names= [];
 //- create event listener for clicks -done
 //- create counter for clicked images -done
 
-function Products(filepath, productName) {
+function Products(filepath, productName,votes=0, views=0) {
   this.filepath = filepath;
   this.productName = productName;
-  this.votes = 0;
-  this.views = 0;
+  this.votes = votes;
+  this.views = views;
 
   allProducts.push(this);
 }
@@ -48,6 +65,12 @@ new Products('img/usb.gif', 'usb');
 new Products('img/water-can.jpg', 'water-can');
 new Products('img/wine-glass.jpg', 'wine-glass');
 
+
+
+//var savedVotes = parseInt(parsedResults[i].votes);
+
+//console.log(savedVotes);
+// (parsedResults[i].views);
 
 
 function render(imageElement) {
@@ -86,7 +109,7 @@ function handleClick(event) {
 
   for (var i = 0; i < allProducts.length; i++) {
     if (chosenProduct === allProducts[i].productName) {
-      //console.log('increasing votes for ', allProducts[i].productName);
+
       allProducts[i].votes++;
     }
   }
@@ -96,7 +119,7 @@ function handleClick(event) {
   render(imageThreeElement);
 
   totalVotes++;
-  if (totalVotes >= 3) {
+  if (totalVotes >= 4) {
 
 
     document.getElementById('image-container').removeEventListener('click', handleClick);
@@ -110,13 +133,19 @@ function handleClick(event) {
       ulElement.appendChild(liElement);
     }
     voteResultsChartFiller();
-    BuildChart();
+    buildChart();
+    
+    var saveUserVotes = JSON.stringify(allProducts);
+    console.log(saveUserVotes);
+    localStorage.setItem('pastResults', saveUserVotes);
+    
+    
   }
 
 }
 
 
-function BuildChart(){
+function buildChart(){
   var ctx = document.getElementById('myChart').getContext('2d');
   var myChart = new Chart(ctx, {
     type: 'bar',
@@ -146,7 +175,6 @@ function BuildChart(){
       }
     }
   });
-  console.log(ctx);
 }
 
 function voteResultsChartFiller(){
