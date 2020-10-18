@@ -13,3 +13,4 @@ Date: 10/12/2020
 ## Resources:
 
 Total vote counter: https://stackoverflow.com/questions/27153750/count-clicks-on-element-with-javascript
+adding step size in chart.js https://stackoverflow.com/questions/28990708/how-to-set-max-and-min-value-for-y-axis
